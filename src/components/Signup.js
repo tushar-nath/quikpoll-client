@@ -31,11 +31,19 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const { firstName, lastName, username, email, password } = formData;
+    const dataToSubmit = {
+      name: `${firstName} ${lastName}`,
+      username,
+      email,
+      password,
+    };
+
     try {
       setLoading(true);
       const response = await axios.post(
         "http://localhost:4000/api/users/signup",
-        formData
+        dataToSubmit
       );
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
