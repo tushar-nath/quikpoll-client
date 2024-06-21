@@ -15,15 +15,15 @@ import { BeatLoader } from "react-spinners";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     username: "",
     email: "",
-    mobileNo: "",
     password: "",
   });
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -39,7 +39,7 @@ const Signup = () => {
       );
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
-      navigate("/chat");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Signup error:", error.response.data.error);
     } finally {
@@ -98,17 +98,6 @@ const Signup = () => {
                 type="email"
                 placeholder="m@example.com"
                 value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Phone Number</Label>
-              <Input
-                id="mobileNo"
-                type="mobileNo"
-                placeholder="+1 123456789"
-                value={formData.mobileNo}
                 onChange={handleChange}
                 required
               />

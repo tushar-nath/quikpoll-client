@@ -35,7 +35,7 @@ const Login = () => {
       );
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
-      navigate("/chat");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error.response.data.error);
     } finally {
