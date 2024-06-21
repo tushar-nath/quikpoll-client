@@ -17,7 +17,7 @@ const ChatBar = ({ socket }) => {
 
   return (
     <div className="h-full bg-[#F9F5EB] flex-[0.2] p-5 border-r border-[#fdfdfd]">
-      <h2 className="text-xl font-bold mb-5">Open Chat</h2>
+      <h2 className="text-xl font-bold mb-5">Quikpoll</h2>
       <div>
         <h4 className="text-lg font-semibold mb-3">ACTIVE USERS</h4>
         <div className="space-y-2">
