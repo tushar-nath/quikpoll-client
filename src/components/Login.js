@@ -30,7 +30,7 @@ const Login = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:4000/api/users/login",
+        `${process.env.REACT_APP_NODE_SERVER_BASE_URL}/api/users/login`,
         formData
       );
       localStorage.setItem("token", response.data.token);

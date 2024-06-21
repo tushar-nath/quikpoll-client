@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 
-const socket = io("http://localhost:4000");
+const baseURL = process.env.REACT_APP_NODE_SERVER_BASE_URL;
+const socket = io(baseURL as string);
 
 const App: React.FC = () => {
   const [polls, setPolls] = useState<any[]>([]);
@@ -13,10 +14,10 @@ const App: React.FC = () => {
   useEffect(() => {
     // Fetch initial data
     axios
-      .get("http://localhost:4000/api/polls")
+      .get(`${baseURL}/api/polls`)
       .then((response) => setPolls(response.data.polls));
     axios
-      .get("http://localhost:4000/api/messages")
+      .get(`${baseURL}/api/messages`)
       .then((response) => setMessages(response.data.messages));
 
     // Socket event listeners
@@ -45,7 +46,7 @@ const App: React.FC = () => {
 
   const handleVote = (pollId: string, optionIndex: number) => {
     axios
-      .post("http://localhost:4000/api/polls/vote", { pollId, optionIndex })
+      .post(`${baseURL}/api/polls/vote`, { pollId, optionIndex })
       .then(() => {
         socket.emit("vote", { pollId, optionIndex });
       });
@@ -58,7 +59,7 @@ const App: React.FC = () => {
         name: username,
         socketID: socket.id,
       };
-      axios.post("http://localhost:4000/api/messages", chatMessage).then(() => {
+      axios.post(`${baseURL}/api/messages`, chatMessage).then(() => {
         socket.emit("message", chatMessage);
         setMessage("");
       });

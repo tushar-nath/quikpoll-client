@@ -42,7 +42,7 @@ const Signup = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:4000/api/users/signup",
+        `${process.env.REACT_APP_NODE_SERVER_BASE_URL}/api/users/signup`,
         dataToSubmit
       );
       localStorage.setItem("token", response.data.token);

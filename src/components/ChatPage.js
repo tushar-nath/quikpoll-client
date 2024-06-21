@@ -28,7 +28,9 @@ const ChatPage = ({ socket }) => {
 
   const fetchMessages = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/api/messages");
+      const response = await axios.get(
+        `${process.env.REACT_APP_NODE_SERVER_BASE_URL}/api/messages`
+      );
       setMessages(response.data.messages.reverse());
     } catch (error) {
       console.error("Error fetching messages:", error);

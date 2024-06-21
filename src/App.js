@@ -8,7 +8,7 @@ import PollsPage from "./components/PollPage";
 import socketIO from "socket.io-client";
 import "./index.css";
 
-const socket = socketIO.connect("http://localhost:4000");
+const socket = socketIO.connect(process.env.REACT_APP_NODE_SERVER_BASE_URL);
 
 function App() {
   return (

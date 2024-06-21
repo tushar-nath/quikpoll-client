@@ -23,7 +23,9 @@ const PollsPage = ({ socket }) => {
 
   const fetchPolls = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/api/polls");
+      const response = await axios.get(
+        `${process.env.REACT_APP_NODE_SERVER_BASE_URL}/api/polls`
+      );
       setPolls(response.data.polls);
     } catch (error) {
       console.error("Error fetching polls:", error);
@@ -34,10 +36,13 @@ const PollsPage = ({ socket }) => {
     e.preventDefault();
     try {
       const user = JSON.parse(localStorage.getItem("user"));
-      const response = await axios.post("http://localhost:4000/api/polls", {
-        ...newPoll,
-        userId: user._id,
-      });
+      const response = await axios.post(
+        `${process.env.REACT_APP_NODE_SERVER_BASE_URL}/api/polls`,
+        {
+          ...newPoll,
+          userId: user._id,
+        }
+      );
       setPolls([...polls, response.data.poll]);
       setNewPoll({ question: "", options: ["", ""] });
     } catch (error) {
@@ -47,8 +52,6 @@ const PollsPage = ({ socket }) => {
 
   const handleVote = async (pollId, optionIndex) => {
     try {
-      // Remove the local update
-      // Only emit the vote event to the server
       socket.emit("vote", { pollId, optionIndex });
     } catch (error) {
       console.error("Error voting:", error);
