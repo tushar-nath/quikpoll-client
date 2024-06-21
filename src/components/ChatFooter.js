@@ -1,23 +1,26 @@
 import React, { useState } from "react";
 
-const ChatFooter = ({ socket }) => {
+const ChatFooter =  ({ socket, setMessages }) => {
   const [message, setMessage] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));
 
-  const handleTyping = () =>
+  const handleTyping = () => {
     socket.emit("typing", `${user.username} is typing`);
+  };
 
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (message.trim() && user) {
-      socket.emit("message", {
+      const messageData = {
         text: message,
         name: user.username,
         id: `${socket.id}${Math.random()}`,
         socketID: socket.id,
-      });
+      };
+      socket.emit("message", messageData);
+      setMessages((prev) => [...prev, messageData]);
+      setMessage(""); 
     }
-    setMessage("");
   };
 
   return (

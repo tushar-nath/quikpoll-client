@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ChatBar from "./ChatBar";
 import ChatBody from "./ChatBody";
 import ChatFooter from "./ChatFooter";
+import axios from "axios";
 
 const ChatPage = ({ socket }) => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const ChatPage = ({ socket }) => {
     } else {
       const userData = JSON.parse(user);
       socket.emit("newUser", { username: userData.username });
+      fetchMessages();
     }
 
     return () => {
@@ -24,9 +26,25 @@ const ChatPage = ({ socket }) => {
     };
   }, [navigate, socket]);
 
+  const fetchMessages = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/api/messages");
+      setMessages(response.data.messages.reverse());
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
+
   useEffect(() => {
-    socket.on("messageResponse", (data) => setMessages([...messages, data]));
-  }, [socket, messages]);
+    socket.on("messageResponse", (data) => {
+      setMessages((prev) => {
+        if (!prev.some((msg) => msg.id === data.id)) {
+          return [...prev, data];
+        }
+        return prev;
+      });
+    });
+  }, [socket]);
 
   useEffect(() => {
     socket.on("typingResponse", (data) => setTypingStatus(data));
@@ -45,7 +63,7 @@ const ChatPage = ({ socket }) => {
           typingStatus={typingStatus}
           lastMessageRef={lastMessageRef}
         />
-        <ChatFooter socket={socket} />
+        <ChatFooter socket={socket} setMessages={setMessages} />
       </div>
     </div>
   );

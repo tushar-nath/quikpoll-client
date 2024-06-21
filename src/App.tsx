@@ -1,9 +1,8 @@
-// src/App.tsx
 import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 
-const socket = io("http://localhost:3000");
+const socket = io("http://localhost:4000");
 
 const App: React.FC = () => {
   const [polls, setPolls] = useState<any[]>([]);
@@ -13,9 +12,11 @@ const App: React.FC = () => {
 
   useEffect(() => {
     // Fetch initial data
-    axios.get("/api/polls").then((response) => setPolls(response.data.polls));
     axios
-      .get("/api/chats")
+      .get("http://localhost:4000/api/polls")
+      .then((response) => setPolls(response.data.polls));
+    axios
+      .get("http://localhost:4000/api/messages")
       .then((response) => setMessages(response.data.messages));
 
     // Socket event listeners
@@ -27,32 +28,38 @@ const App: React.FC = () => {
       });
     });
 
-    socket.on("chatMessage", (message) => {
-      setMessages((prevMessages) => [message, ...prevMessages]);
-    });
+    socket.on("messageResponse", (data) =>
+      setMessages((prevMessages) => [data, ...prevMessages])
+    );
 
-    socket.on("typing", (data) => {
+    socket.on("typingResponse", (data) => {
       // Handle typing indicator
     });
 
     return () => {
       socket.off("voteUpdate");
-      socket.off("chatMessage");
-      socket.off("typing");
+      socket.off("messageResponse");
+      socket.off("typingResponse");
     };
   }, []);
 
   const handleVote = (pollId: string, optionIndex: number) => {
-    axios.post("/api/polls/vote", { pollId, optionIndex }).then(() => {
-      socket.emit("vote", { pollId, optionIndex });
-    });
+    axios
+      .post("http://localhost:4000/api/polls/vote", { pollId, optionIndex })
+      .then(() => {
+        socket.emit("vote", { pollId, optionIndex });
+      });
   };
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      const chatMessage = { message, username };
-      axios.post("/api/chats", chatMessage).then(() => {
-        socket.emit("chatMessage", chatMessage);
+      const chatMessage = {
+        text: message,
+        name: username,
+        socketID: socket.id,
+      };
+      axios.post("http://localhost:4000/api/messages", chatMessage).then(() => {
+        socket.emit("message", chatMessage);
         setMessage("");
       });
     }
@@ -92,7 +99,7 @@ const App: React.FC = () => {
         <div>
           {messages.map((msg, index) => (
             <div key={index}>
-              <strong>{msg.username}:</strong> {msg.message}
+              <strong>{msg.name}:</strong> {msg.text}
             </div>
           ))}
         </div>
